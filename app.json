@@ -13,5 +13,10 @@
     "worker": {
       "quantity": 1
     }
+  },
+  "env": {
+    "ROUTEMASTER_REDIS_URL": {
+      "value": "REDISGREEN_URL"
+    }
   }
 }
