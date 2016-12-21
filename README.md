@@ -107,7 +107,13 @@ A subscriber can "catch up" event if it hasn't pulled events for a while
 
 --------------------------------------------------------------------------------
 
-## Installing & Configuring
+## Deploying & Configuring
+
+Use this to deploy Routemaster with a default configuration: 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/deliveroo/routemaster#heroku-button)
+
+If installing manually, the minimum amount of configuration is to set
+`REDIS_URL` to point to a valid Redis instance.
 
 In order to have routemaster receive connections from a receiver or emitter
 you'll need to add their identifier to the `ROUTEMASTER_CLIENTS` environment
@@ -120,7 +126,9 @@ By default the bus will send events to `demo`, eg:
 ROUTEMASTER_CLIENTS=demo,my-service--6f1d6311-98a9-42ab-8da4-ed2d7d5b86c4`
 ```
 
-For further configuration options please check the provided `.env` files
+For further configuration options please check the default `.env` files, which
+can be overriden with environment variables.
+
 
 ### Development
 
@@ -159,6 +167,7 @@ the default web port that the **web** process will listen to is defined in the
 `.env` file. By default routemaster log level is set to `DEBUG` if this is too
 chatty you can easily configure this in the `.env` file
 
+Finally, note that settings can be overriden in `.env.local` for development.
 
 
 --------------------------------------------------------------------------------

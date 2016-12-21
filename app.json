@@ -1,0 +1,19 @@
+{
+  "name": "routemaster",
+  "description": "An Event Bus for RESTful architectures",
+  "website": "http://routemaster.io",
+  "repository": "https://github.com/deliveroo/routemaster#heroku-button",
+  "addons": [
+    "redisgreen:minidev"
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "Standard-1X"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "Standard-1X"
+    }
+  }
+}
