@@ -110,7 +110,7 @@ A subscriber can "catch up" event if it hasn't pulled events for a while
 ## Deploying & Configuring
 
 Use this to deploy Routemaster with a default configuration: 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/deliveroo/routemaster#heroku-button)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/deliveroo/routemaster/tree/heroku-button)
 
 If installing manually, the minimum amount of configuration is to set
 `REDIS_URL` to point to a valid Redis instance.
