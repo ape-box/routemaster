@@ -3,6 +3,7 @@ require 'routemaster/mixins/redis'
 require 'routemaster/mixins/log'
 require 'routemaster/mixins/log_exception'
 require 'routemaster/mixins/assert'
+require 'routemaster/mixins/counters'
 require 'routemaster/models/job'
 
 module Routemaster
@@ -14,6 +15,7 @@ module Routemaster
       include Mixins::Log
       include Mixins::LogException
       include Mixins::Assert
+      include Mixins::Counters
 
       attr_reader :name
 
@@ -47,14 +49,14 @@ module Routemaster
       # Returns the job currently being run by `worker_id`.
       # Empty if no jobs are running, or the worker isn't known.
       def running_jobs(worker_id)
-        raw = _redis.lrange(_pending_key(worker_id), 0, 0)
+        raw = _redis.lrange(_pending_key(worker_id), 0, -1)
         return [] unless raw
         raw.map { |x| Job.load(x) }
       end
 
 
       # Count all jobs; or all jobs before the deadline, if specified.
-      def length(deadline: nil, scheduled: true, instant: true)
+      def length(deadline:nil, scheduled: true, instant: true)
         _assert(deadline.nil? || deadline.kind_of?(Integer), 'bad deadline value')
 
         deadline ||= '+inf'
@@ -148,9 +150,10 @@ module Routemaster
           worker_id = key.split(':').last
           next unless yield worker_id
 
-          _redis_lua_run(
+          count = _redis_lua_run(
             'queue_scrub',
             keys: [key, _queue_key, _index_key])
+          _counters.incr('jobs.scrubbed', queue: name, count: count)
           _log.warn { "scrubbed worker.#{worker_id}" }
         end
       end
