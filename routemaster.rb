@@ -4,11 +4,17 @@ module Routemaster
   end
 
   DEFAULTS = {
-    redis_pool_size: 1
+    redis_pool_size: 1,
+    process_type:    'unknown',
   }.freeze
 
   def self.configure(**options)
     @_config = DEFAULTS.merge(options)
+    counters.incr('process', type: config[:process_type], status: 'start')
+  end
+
+  def self.teardown
+    counters.incr('process', type: config[:process_type], status: 'stop').finalize
   end
 
   def self.config
@@ -26,6 +32,13 @@ module Routemaster
     @_aux_queue ||= begin
       require 'routemaster/models/queue'
       Models::Queue.new(name: 'aux')
+    end
+  end
+
+  def self.counters
+    @_counters ||= begin
+      require 'routemaster/models/counters'
+      Models::Counters.instance
     end
   end
 end
