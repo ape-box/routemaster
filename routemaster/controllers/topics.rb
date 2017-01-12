@@ -31,7 +31,8 @@ module Routemaster
           )
         rescue ArgumentError
           halt 400, 'bad topic'
-        rescue Routemaster::Models::Topic::TopicClaimedError
+        rescue Routemaster::Models::Topic::TopicClaimedError => e
+          _log_exception(e)
           halt 403, 'topic claimed'
         end
 
