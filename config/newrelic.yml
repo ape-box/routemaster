@@ -83,7 +83,7 @@ common: &default_settings
   browser_monitoring:
       # By default the agent automatically injects the monitoring JavaScript
       # into web pages. Set this attribute to false to turn off this behavior.
-      auto_instrument: true
+      auto_instrument: false
 
   # Proxy settings for connecting to the New Relic server.
   #
@@ -175,6 +175,16 @@ common: &default_settings
   # overhead slightly on every memcached call, and can have security
   # implications if your memcached keys are sensitive
   # capture_memcache_keys: true
+  
+  # When set to true, forces a synchronous connection to the New Relic collector
+  # during application startup. For very short-lived processes, this helps
+  # ensure the New Relic agent has time to report. (default: false)
+  sync_startup: true
+
+  # If true, enables the exit handler that sends data to the New Relic collector
+  # before shutting down. (default: true)
+  send_data_on_exit: true
+
 
 # Application Environments
 # ------------------------------------------

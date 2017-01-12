@@ -1,25 +1,13 @@
+require 'routemaster/configuration'
+require 'delegate'
+
 module Routemaster
   def self.now
     (Time.now.utc.to_f * 1e3).to_i
   end
 
-  DEFAULTS = {
-    redis_pool_size: 1,
-    process_type:    'unknown',
-  }.freeze
-
-  def self.configure(**options)
-    @_config = DEFAULTS.merge(options)
-    counters.incr('process', type: config[:process_type], status: 'start')
-  end
-
-  def self.teardown
-    counters.incr('process', type: config[:process_type], status: 'stop').finalize
-  end
-
-  def self.config
-    @_config || DEFAULTS
-  end
+  extend SingleForwardable
+  delegate %i[configure teardown config] => '::Routemaster::Configuration.instance'
 
   def self.batch_queue
     @_batch_queue ||= begin
