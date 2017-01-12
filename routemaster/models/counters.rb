@@ -1,6 +1,7 @@
 require 'routemaster/models'
 require 'routemaster/mixins/redis'
 require 'routemaster/mixins/log'
+require 'routemaster/mixins/log_exception'
 require 'core_ext/hash'
 require 'monitor'
 require 'msgpack'
@@ -13,7 +14,7 @@ module Routemaster
       include Singleton
       include Mixins::Redis
       include Mixins::Log
-
+      include Mixins::LogException
 
       def initialize
         @data = Hash.new(0).extend(MonitorMixin)
@@ -30,6 +31,10 @@ module Routemaster
           @cv.broadcast
         end
         @thread.join
+      rescue => e
+        _log_exception(e)
+        deliver_exception(e)
+      ensure
         @thread = nil
         self
       end
@@ -92,6 +97,7 @@ module Routemaster
 
       def _flusher_thread
         Thread.current.abort_on_exception = true
+        _log_context 'counters'
         while @running
           @data.synchronize { @cv.wait(_flush_interval) }
           flush
