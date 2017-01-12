@@ -1,6 +1,7 @@
 require 'routemaster/services'
 require 'routemaster/mixins/log'
 require 'routemaster/mixins/log_exception'
+require 'routemaster/mixins/counters'
 require 'faraday'
 require 'typhoeus'
 require 'typhoeus/adapters/faraday'
@@ -12,6 +13,7 @@ module Routemaster
     class Deliver
       include Mixins::Log
       include Mixins::LogException
+      include Mixins::Counters
 
       CONNECT_TIMEOUT = ENV.fetch('ROUTEMASTER_CONNECT_TIMEOUT').to_i
       TIMEOUT         = ENV.fetch('ROUTEMASTER_TIMEOUT').to_i
@@ -30,8 +32,43 @@ module Routemaster
       def call
         _log.debug { "starting delivery to '#{@subscriber.name}'" }
 
-        # assemble data
-        data = @buffer.map do |event|
+        error = nil
+        start_at = Routemaster.now
+        begin
+          # send data
+          response = _conn.post do |post|
+            post.headers['Content-Type'] = 'application/json'
+            post.body = _data.to_json
+          end
+          error = CantDeliver.new("HTTP #{response.status}") unless response.success?
+        rescue Faraday::Error::ClientError => e
+          error = CantDeliver.new("#{e.class.name}: #{e.message}")
+        end
+
+        t = Routemaster.now - start_at
+        status = error ? 'failure' : 'success'
+
+        _counters.incr('delivery.events',  queue: @subscriber.name, count: _data.length, status: status)
+        _counters.incr('delivery.batches', queue: @subscriber.name, count: 1,            status: status)
+        _counters.incr('delivery.time',    queue: @subscriber.name, count: t,            status: status)
+        _counters.incr('delivery.time2',   queue: @subscriber.name, count: t*t,          status: status)
+        
+        if error
+          _log.warn { "failed to deliver #{@buffer.length} events to '#{@subscriber.name}'" }
+          raise error
+        else
+          _log.debug { "delivered #{@buffer.length} events to '#{@subscriber.name}'" }
+        end
+        true
+      end
+
+
+      private
+
+
+      # assemble data
+      def _data
+        @_data ||= @buffer.map do |event|
           {
             topic: event.topic,
             type:  event.type,
@@ -39,38 +76,18 @@ module Routemaster
             t:     event.timestamp
           }
         end
-
-        # send data
-        begin
-          response = _conn.post do |post|
-            post.headers['Content-Type'] = 'application/json'
-            post.body = data.to_json
-          end
-        rescue Faraday::Error::ClientError => e
-          raise CantDeliver.new("#{e.class.name}: #{e.message}")
-        end
-
-        if response.success?
-          _log.debug { "delivered #{@buffer.length} events to '#{@subscriber.name}'" }
-          return true
-        end
-
-        _log.warn { "failed to deliver #{@buffer.length} events to '#{@subscriber.name}'" }
-        raise CantDeliver.new("HTTP #{response.status}")
       end
-
-
-      private
 
 
       def _conn
         @_conn ||= Faraday.new(@subscriber.callback, ssl: { verify: _verify_ssl? }) do |c|
           c.adapter :typhoeus
           c.basic_auth(@subscriber.uuid, 'x')
-          c.options[:open_timeout] = CONNECT_TIMEOUT
-          c.options[:timeout] = TIMEOUT
+          c.options.open_timeout = CONNECT_TIMEOUT
+          c.options.timeout      = TIMEOUT
         end
       end
+
 
       def _verify_ssl?
         !!( ENV.fetch('ROUTEMASTER_SSL_VERIFY') =~ /^(true|on|yes|1)$/i )
