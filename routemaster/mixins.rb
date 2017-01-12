@@ -1,4 +1,6 @@
 require 'routemaster'
 
-module Routemaster::Mixins
+module Routemaster
+  module Mixins
+  end
 end
