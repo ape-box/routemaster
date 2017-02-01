@@ -45,7 +45,7 @@ module Routemaster
         end
       end
 
-      
+
       # Returns the job currently being run by `worker_id`.
       # Empty if no jobs are running, or the worker isn't known.
       def running_jobs(worker_id)
@@ -61,7 +61,7 @@ module Routemaster
 
         deadline ||= '+inf'
         (scheduled ? _redis.zcount(_scheduled_key, '-inf', deadline) : 0) +
-        (instant ? _redis.llen(_queue_key) : 0)      
+        (instant ? _redis.llen(_queue_key) : 0)
       end
 
 
@@ -97,7 +97,10 @@ module Routemaster
         end
 
         job_data = _redis.brpoplpush(_queue_key, pending_key, timeout: _acquire_timeout)
-        return if job_data.nil?
+        if job_data.nil?
+          _log.debug("return because no data found for pending_key: #{pending_key}")
+          return
+        end
 
         job = Job.load(job_data)
         yield job
@@ -109,6 +112,7 @@ module Routemaster
 
         true
       rescue Retry => e
+        _log.info("retry due to #{e.inspect}")
         run_at = Routemaster.now + e.delay
 
         _redis_lua_run(
@@ -141,7 +145,7 @@ module Routemaster
           keys: [_scheduled_key, _queue_key],
           argv: [deadline, batch_size])
       end
-      
+
 
       # Re-queue all jobs marked as aquired, if the block returns true for a
       # worker ID.
