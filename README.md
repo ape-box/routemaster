@@ -12,6 +12,7 @@
 **Routemaster** is an opinionated event bus over HTTP, supporting event-driven /
 representational state notification architectures.
 
+
 Routemaster aims to dispatch events with a median latency in the 50 - 100ms
 range, with no practical upper limit on throughput.
 
@@ -31,7 +32,9 @@ events about topics they've subscribed to.
 
 Pushing, receiving, and subscribing all happen over HTTP.
 
-![](https://www.dropbox.com/s/qbn1srjjcb8t0vh/Screenshot%202016-08-25%2016.41.54.png?raw=1)
+
+![](https://github.com/deliveroo/routemaster/blob/update-readme/docs/routemaster.svg)
+
 
 Events are (by default) delivered in ordered batches, ie. a given HTTP request
 to a subscriber contains several events, from all subscribed topics.
@@ -42,6 +45,7 @@ We built Routemaster because existing buses for distributed architectures aren't
 satisfactory to us; either they're too complex to host and maintain, don't
 support key features (persistence), or provide too much rope to hang ourselves
 with.
+
 
 ### Remote procedure call as an antipattern
 
