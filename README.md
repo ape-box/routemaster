@@ -33,7 +33,7 @@ events about topics they've subscribed to.
 Pushing, receiving, and subscribing all happen over HTTP.
 
 
-![](https://github.com/deliveroo/routemaster/blob/update-readme/docs/routemaster.svg)
+![](https://raw.githubusercontent.com/deliveroo/routemaster/update-readme/doc/routemaster.svg)
 
 
 Events are (by default) delivered in ordered batches, ie. a given HTTP request
