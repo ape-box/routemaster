@@ -35,6 +35,7 @@ Pushing, receiving, and subscribing all happen over HTTP.
 
 ![](https://raw.githubusercontent.com/deliveroo/routemaster/update-readme/doc/routemaster.svg)
 
+![](https://cdn.rawgit.com/deliveroo/routemaster/update-readme/doc/routemaster.svg)
 
 Events are (by default) delivered in ordered batches, ie. a given HTTP request
 to a subscriber contains several events, from all subscribed topics.
