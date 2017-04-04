@@ -158,8 +158,8 @@ foreman start
 This will start both the web server and ancillary processes. Keep in mind that
 the default web port that the **web** process will listen to is defined in the
 `.env` file. By default routemaster log level is set to `DEBUG` if this is too
-chatty you can easily configure this in the `.env` file
-
+chatty you can easily configure this in the `.env` file. To setup local environment
+variables create a `.env.local` file and copy over any you wish to change.
 
 
 --------------------------------------------------------------------------------
