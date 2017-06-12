@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.4.1'
+ruby '2.4.1' unless ENV['RUBY_VERSION'] == 'ruby-head' # so that CI can build without an explicit version number
 
 # process runner
 gem 'foreman'
