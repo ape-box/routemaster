@@ -185,6 +185,8 @@ worker_timeout Integer(ENV.fetch('PUMA_TIMEOUT'))
 #
 worker_boot_timeout Integer(ENV.fetch('PUMA_BOOT_TIMEOUT'))
 
+worker_shutdown_timeout 10
+
 # === Puma control rack application ===
 
 # Start the puma control rack application on "url". This application can
