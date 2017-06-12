@@ -93,8 +93,8 @@ module Routemaster
       def _flusher_thread
         Thread.current.abort_on_exception = true
         while @running
-          @data.synchronize { @cv.wait(_flush_interval) }
           flush
+          @data.synchronize { @cv.wait(_flush_interval) }
         end
         flush
       end

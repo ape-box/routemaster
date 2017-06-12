@@ -207,6 +207,8 @@ on_worker_boot do
   )
 end
 
-on_worker_shutdown do
+on_worker_shutdown do |idx|
+  $stderr.write "worker=#{idx} teardown=starting\n"
   Routemaster.teardown
+  $stderr.write "worker=#{idx} teardown=completed\n"
 end
