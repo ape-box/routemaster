@@ -1,7 +1,8 @@
 language: ruby
 cache: bundler
 rvm:
-  - 2.3.3
+  - 2.4.1
+  - ruby-head
 services:
   - redis-server
 script:
@@ -18,3 +19,6 @@ env:
   - CI_RUN_INDEX=2
   - CI_RUN_INDEX=3
   - CI_RUN_INDEX=4
+matrix:
+  allow_failures:
+    - rvm: ruby-head
