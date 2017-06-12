@@ -74,6 +74,7 @@ module Acceptance
     # terminate the process without waiting
     def terminate
       if @pid
+        _log "terminating (##{@pid})"
         Process.kill('KILL', @pid)
         Process.wait(@pid)
       end
