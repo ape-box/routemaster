@@ -56,6 +56,7 @@ module Acceptance
       return unless @start_regexp && @pid
       _log 'waiting to start'
       wait_log @start_regexp
+      sleep 0.5
       _log "started (##{@pid})"
       self
     end
