@@ -181,7 +181,7 @@ The following gauge metrics will be reported every 10 seconds:
 - `subscriber.queue.events` (tagged by subscriber)
 - `jobs.count` (tagged by queue and status)
 - `redis.bytes_used`, `.max_mem`, `.low_mark`, and `.high_mark` (the latter 3
-  begin the autdropper thresholds)
+  begin the autodropper thresholds)
 - `redis.used_cpu_user` and `.used_cpu_sys` (cumulative CPU milliseconds used by
   the storage backend since boot)
 
@@ -224,7 +224,7 @@ To check delivery failures, one can:
 
 ### Autodrop
 
-Routemaster will, by default, permenently drop the oldest messages from queues
+Routemaster will, by default, permanently drop the oldest messages from queues
 when the amount of free Redis memory drops below a certain threshold.
 This guarantees that the bus will keep ingesting messages, and "clean up"
 behind listeners that are the latest / stale-est.
@@ -257,7 +257,7 @@ The auto-dropper runs every 30 seconds.
    This requires to scale the HTTP frontend.
    Procfile.
 2. Allowing Routemaster to _deliver_ more events:<br>
-   This require running multiple instances of the _worker_ process.
+   This requires running multiple instances of the _worker_ process.
    No auto-scaling mechanism is currently provided, so we recommend running the
    number of processes you'll require at peak.<br>
    Note that event delivery is bounded by the ability of subscribers to process
@@ -470,12 +470,12 @@ Routermaster provides monitoring endpoints:
 - `<name>`: the names of all topics routed into this subscriptions queue.
 - `<sent_count>`: total number of events ever sent on this topic.
 - `<queue_size>`: current number of events in the subscription queue.
-- `<oldest>`: timestamp (seconds since epoch) of the oldest pending event.
+- `<staleness>`: timestamp (seconds since epoch) of the oldest pending event.
 
 
 Monitoring resources can be queries by clients with a UUID included in `ROUTEMASTER_CLIENTS`.
 
-Routemaster does not, and will not include an UI for monitoring, as that would
+Routemaster does not, and will not include a UI for monitoring, as that would
 complexify its codebase too much (it's a separate concern, really).
 
 
@@ -510,7 +510,6 @@ Support for sending-side autoscaling:
   We plan to address this with (optional) subscribed locking in the _watch_.
 - Support for HireFire-based autoscaling of _watch_ processes.
 
-
 --------------------------------------------------------------------------------
 
 ## Sources of inspiration
@@ -520,3 +519,17 @@ Support for sending-side autoscaling:
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [ActiveSupport::Notification](http://api.rubyonrails.org/classes/ActiveSupport/Notifications.html)
 - [Pusher](https://app.pusher.com/)
+
+## Docker
+
+This project contains a `Dockerfile` and a Docker image is being built on every CI run to ensure smoother transition to a Docker-based architecture. Normally that step would not require any manual input from you as a developer but you may still want to manually check if your image builds or test any changes to the `Dockerfile`. Make sure you have Docker installed on your local machine and run the following command from the root of the project:
+
+```bash
+docker build -t routemaster .
+```
+
+If you want to get a shell on a Docker container built from this image, build the image first (see above), then run:
+
+```bash
+docker run --rm -it routemaster sh
+```
