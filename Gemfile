@@ -69,3 +69,7 @@ group :test do
       require: false,
       git: 'https://github.com/deliveroo/ruby-test-reporter.git'
 end
+
+if %w(2.2.7 2.3.4 2.4.1).include? RUBY_VERSION
+  gem "stopgap_13632", "~> 1.0", :platforms => ["mri", "mingw", "x64_mingw"]
+end
