@@ -128,16 +128,16 @@ module Acceptance
         name:    'web',
         command: 'puma -I. -C config/puma.rb',
         start:   /Worker 1.*booted/,
-        stop:    /Goodbye!/
+        stop:    /Puma master exiting/
       )
     end
 
     def client
       @client ||= SubProcess.new(
         name:    'client',
-        command: 'puma -I. -w 2 -p 17892 -C /dev/null spec/support/client.ru',
+        command: 'puma -I. -w 2 -p 17892 -C spec/support/client-puma.rb spec/support/client.ru',
         start:   /Worker 1.*booted/,
-        stop:    /Goodbye!/
+        stop:    /Puma master exiting/
       )
     end
 

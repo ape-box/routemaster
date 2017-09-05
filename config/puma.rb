@@ -214,3 +214,15 @@ on_worker_shutdown do |idx|
   Routemaster.teardown
   $stderr.write "worker=#{idx} teardown=completed\n"
 end
+
+before_fork do
+  @at_exit_installed ||= begin
+    pid = Process.pid
+    at_exit do
+       if Process.pid == pid
+        $stderr.write "[#{pid}] - Puma master exiting\n"
+      end
+    end
+    true
+  end
+end
