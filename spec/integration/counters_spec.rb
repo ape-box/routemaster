@@ -14,6 +14,8 @@ describe 'Process counters', slow:true do
     before { subject.start }
     after  { subject.terminate }
 
+    after { |example| subject.dump_logs if example.exception }
+
     it 'starts cleanly' do
       subject.wait_start
       subject.stop.wait_stop

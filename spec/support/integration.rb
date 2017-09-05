@@ -14,6 +14,7 @@ module Acceptance
       @pid     = nil
       @reader  = nil
       @loglines = []
+      @full_logs = []
       @start_regexp = start
       @stop_regexp  = stop
     end
@@ -22,6 +23,7 @@ module Acceptance
       raise 'already started' if @pid
       _log 'starting'
       @loglines = []
+      @full_logs = []
       rd, wr = IO.pipe
       if @pid = fork
         # parent
@@ -95,6 +97,10 @@ module Acceptance
       self
     end
 
+    def dump_logs(io: STDERR)
+      @full_logs.each { |line| io.write line }
+    end
+
     private
 
     def _read_log(io)
@@ -102,14 +108,20 @@ module Acceptance
         if VERBOSE
           $stderr.write line
           $stderr.flush
+        else
+          @full_logs.push line
         end
         @loglines.push line
       end
     end
 
     def _log(message)
-      return unless VERBOSE
-      $stderr.write("\t-> #{@name}: #{message}\n")
+      line = "\t-> #{@name}: #{message}\n"
+      if VERBOSE
+        $stderr.write line
+      else
+        @full_logs.push line
+      end
     end
   end
 
