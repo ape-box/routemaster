@@ -1,4 +1,4 @@
-FROM ruby:2.3.3-alpine
+FROM ruby:2.4.1-alpine
 
 # App home directory and app user can be injected through build params.
 ARG ARG_HOME=/app
