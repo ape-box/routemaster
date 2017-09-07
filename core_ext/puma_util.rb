@@ -31,11 +31,13 @@ module Puma
   end
 end
 
-module SafeWriteIO
-  def puts(*args)
-    super
-  rescue IOError
-  end
-end
+# module SafeWriteIO
+#   def puts(*args)
+#     super
+#   rescue IOError
+#     Thread.current.purge_interrupt_queue if Thread.current.respond_to? :purge_interrupt_queue
+#     nil
+#   end
+# end
 
-STDERR.extend(SafeWriteIO)
+# STDERR.extend(SafeWriteIO)
