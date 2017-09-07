@@ -31,17 +31,13 @@ jobs:
           name: Run RSpec and report test results
           command: bin/ci run --rm app bin/test_and_report
 
-  run_ci_2:
-    <<: *test_run
-
-  run_ci_3:
-    <<: *test_run
-
-  run_ci_4:
-    <<: *test_run
-
-  run_ci_5:
-    <<: *test_run
+  run_ci_2: *test_run
+  run_ci_3: *test_run
+  run_ci_4: *test_run
+  run_ci_5: *test_run
+  run_ci_6: *test_run
+  run_ci_7: *test_run
+  run_ci_8: *test_run
 
   build_image:
     <<: *defaults
