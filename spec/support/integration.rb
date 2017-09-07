@@ -24,19 +24,22 @@ module Acceptance
       _log 'starting'
       @loglines = []
       @full_logs = []
-      rd, wr = IO.pipe
+      rd_o, wr_o = IO.pipe
+      rd_e, wr_e = IO.pipe
       if @pid = fork
         # parent
-        wr.close
-        @reader = Thread.new { _read_log(rd) }
+        wr_o.close
+        wr_e.close
+        @reader = Thread.new { _read_log(rd_o, rd_e) }
       else
         _log "forked (##{$$})"
         # child
-        rd.close
+        rd_o.close
+        rd_e.close
         ENV['ROUTEMASTER_LOG_FILE'] = nil
         $stdin.reopen('/dev/null')
-        $stdout.reopen(wr)
-        $stderr.reopen(wr)
+        $stdout.reopen(wr_o)
+        $stderr.reopen(wr_e)
         $stdout.sync = true
         $stderr.sync = true
         exec @command
@@ -67,6 +70,7 @@ module Acceptance
     def wait_stop
       return unless @stop_regexp && @pid
       _log "waiting to stop (##{@pid})"
+      sleep 0.5 # give the process time to "properly" start, set up signals etc
       wait_log @stop_regexp
       _log 'stopped'
     ensure
@@ -103,15 +107,24 @@ module Acceptance
 
     private
 
-    def _read_log(io)
-      while line = io.gets
-        if VERBOSE
-          $stderr.write line
-          $stderr.flush
-        else
-          @full_logs.push line
+    def _read_log(*ios)
+      loop do
+        IO.select(ios).first.each do |io|
+          line = io.gets
+          if line.nil?
+            ios.delete(io)
+            next
+          end
+
+          if VERBOSE
+            $stderr.write line
+            $stderr.flush
+          else
+            @full_logs.push line
+          end
+          @loglines.push line
         end
-        @loglines.push line
+        break if ios.empty?
       end
     end
 
