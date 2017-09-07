@@ -30,3 +30,12 @@ module Puma
     end
   end
 end
+
+module SafeWriteIO
+  def puts(*args)
+    super
+  rescue IOError
+  end
+end
+
+STDERR.extend(SafeWriteIO)
