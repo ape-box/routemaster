@@ -33,6 +33,7 @@ module Routemaster
 
       def _formatter(severity, datetime, _progname, message)
         _format % {
+          pid:       Process.pid,
           timestamp: datetime.utc.strftime(TIMESTAMP_FORMAT),
           level:     severity,
           message:   message,
@@ -45,7 +46,7 @@ module Routemaster
           # In "deployed" environments (normally running Foreman), timestamps are
           # already added by the wrapper.
           _show_timestamp? ?
-            "[%<timestamp>s] %<level>s: [%<context>s] %<message>s\n" :
+            "[%<pid>d] [%<timestamp>s] %<level>s: [%<context>s] %<message>s\n" :
             "%<level>s: [%<context>s] %<message>s\n"
         end
       end
