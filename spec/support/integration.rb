@@ -70,7 +70,7 @@ module Acceptance
     def wait_stop
       return unless @stop_regexp && @pid
       _log "waiting to stop (##{@pid})"
-      sleep 0.5 # give the process time to "properly" start, set up signals etc
+      # sleep 0.5 # give the process time to "properly" start, set up signals etc
       wait_log @stop_regexp
       _log 'stopped'
     ensure
