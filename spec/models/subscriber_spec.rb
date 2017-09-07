@@ -69,6 +69,30 @@ describe Routemaster::Models::Subscriber do
     end
   end
 
+  describe '#version=' do
+    Routemaster::DELIVERY_API_VERSIONS.each do |value|
+      it "accepts #{value}" do
+        expect { subject.version = value }.not_to raise_error
+      end
+    end
+
+    it 'rejects other integers' do
+      expect { subject.version = 3 }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '#version' do
+    it 'defaults to 1' do
+      expect(subject.version).to eq 1
+    end
+
+    it 'can be updated' do
+      subject.version = 2
+      subject.save
+      expect(reloaded_subscriber.version).to eq 2
+    end
+  end
+
   describe '.each' do
 
     it 'does not yield when no subscribers are present' do

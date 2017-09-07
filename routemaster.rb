@@ -8,6 +8,8 @@ module Routemaster
     process_type:    'unknown',
   }.freeze
 
+  DELIVERY_API_VERSIONS = [1,2]
+
   def self.configure(**options)
     @_config = DEFAULTS.merge(options)
     counters.incr('process', type: config[:process_type], status: 'start')

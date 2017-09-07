@@ -79,6 +79,17 @@ module Routemaster::Models
       _attributes['uuid']
     end
 
+    def version=(value)
+      _assert Routemaster::DELIVERY_API_VERSIONS.include?(value)
+      _attributes['version'] = value
+    end
+
+    def version
+      Integer(
+        _attributes['version'] || Routemaster::DELIVERY_API_VERSIONS.first
+      )
+    end
+
     def health_points
       _attributes.fetch('health_points', '100').to_i
     end
